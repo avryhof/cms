@@ -1,0 +1,7 @@
+{
+    "require": {
+		  "avryhof/database": "dev-master",
+		  "twbs/bootstrap": "3.3.*@dev",
+		  "jasny/bootstrap": "dev-master"
+    }
+}

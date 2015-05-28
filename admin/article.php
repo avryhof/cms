@@ -1,0 +1,245 @@
+<? 
+	require_once("admin-config.inc.php");
+	
+	$id = intval($_GET['id']);
+	
+	if ($id > 0) {
+		$is_edit = true;
+		$action = "edit";
+		$article = $db->query("SELECT * FROM `articles` WHERE `id` = $id")->fetch_assoc();
+	} else {
+		$is_edit = false;
+		$action = "add";
+		$article = array(
+			"date" => date("Y-m-d"),
+			"postedby" => $_SERVER['PHP_AUTH_USER']
+		);
+	}
+	
+	$adminusers = $db->query("SELECT * FROM `users` ORDER BY `name`");
+?>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="no-js"><!-- InstanceBegin template="/Templates/admin-pages.dwt.php" codeOutsideHTMLIsLocked="false" --><!--<![endif]-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../favicon.ico">
+    <!-- InstanceBeginEditable name="doctitle" -->
+    <title>News Article | Admin</title>
+    <!-- InstanceEndEditable -->
+    <? if ($local) { ?>
+    	<!-- Latest compiled and minified Bootstrap core CSS -->
+        <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../vendor/jasny/bootstrap/dist/css/jasny-bootstrap.min.css">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap-theme.min.css">        
+    <? } else { ?>
+		<!-- Latest compiled and minified Bootstrap core CSS -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/<?= $bootstrap['version']; ?>/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
+        <!-- Optional theme -->
+        <? if ($bootstrap['theme'] == "default") { ?>
+        	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/<?= $bootstrap['version']; ?>/css/bootstrap-theme.min.css">
+        <? } else { ?>
+        	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/<?= $bootstrap['version']; ?>/<?= $bootstrap['theme']; ?>/bootstrap.min.css">
+        <? } ?>
+    <? } ?>
+    
+    <!-- Optional theme -->
+    <? if ($bootstrap['theme'] == "default") { ?>
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/<?= $bootstrap['version']; ?>/css/bootstrap-theme.min.css">
+    <? } else { ?>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/<?= $bootstrap['version']; ?>/<?= $bootstrap['theme']; ?>/bootstrap.min.css">
+    <? } ?>
+    
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/dashboard.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <![endif]-->
+  <!-- InstanceBeginEditable name="head" -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.1/css/datepicker3.min.css">
+<!-- InstanceEndEditable -->
+</head>
+
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Website Admin</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="../<?= $admin_folder; ?>/user.php?username=<?= $_SERVER['PHP_AUTH_USER']; ?>"><i class="fa fa-user"></i> <?= $_SERVER['PHP_AUTH_USER']; ?></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+          	<li><a href="../index.php">Live Edit Pages</a></li>
+            <li <?= ($pagename == "index.php" ? 'class="active"' : ''); ?>><a href="../<?= $admin_folder; ?>/index.php">Pages</a></li>
+            <? 
+				foreach($admin_modules as $admin_module) {
+					if (in_array($admin_module,$modules)) { 
+			?>
+            	<li <?= ($pagename == $admin_module.".php" ? 'class="active"' : ''); ?>><a href="../<?= $admin_folder; ?>/<?= $admin_module; ?>.php"><?= ucwords($admin_module); ?></a></li>
+            <? 		
+					}
+				}
+			?>
+            <li class="nav-divider"></li>
+            <li <?= ($pagename == "users.php" ? 'class="active"' : ''); ?>><a href="../<?= $admin_folder; ?>/users.php">Users</a></li>
+            <? if (file_exists("../admin/database-browser.php") && $_SERVER['PHP_AUTH_USER'] == $admin_user) { ?>
+            	<li><a href="../<?= $admin_folder; ?>/database-browser.php" target="_blank"><i class="fa fa-database"></i> Database</a></li>
+            <? } ?>
+          </ul>
+        </div>
+        <div class="col-xs-12 col-sm-9 col-md-10 main">
+        <!-- InstanceBeginEditable name="content" -->
+        <form action="../admin/article_save.php" method="post" class="form">
+        <input type="hidden" name="action" value="<?= $action; ?>">
+        <input type="hidden" name="id" value="<?= $id; ?>">
+        
+        <div class="row">
+        	<div class="col-xs-12 col-sm-9">
+                <div class="btn-group">
+                    <a href="../admin/articles.php" class="btn btn-default"><i class="fa fa-chevron-left"></i> Back</a>
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <? if ($is_edit) { ?>
+                    <a href="#" id="delete" class="btn btn-danger"><i class="fa fa-times"></i> Delete</a>
+                    <? } ?>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Title</label>
+                    <input type="text" name="title" id="title" class="form-control" value="<?= $article['title']; ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="link">Source Link</label>
+                    <input type="url" name="src_url" id="src_url" class="form-control" value="<?= $article['src_url']; ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="desc">Description</label>
+                    <textarea name="desc" id="desc" class="form-control"><?= $article['desc']; ?></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Content</label>
+                    <textarea name="content" id="content" class="form-control"><?= $article['content']; ?></textarea>
+                </div>
+                
+            </div>
+            <div class="col-xs-12 col-sm-3">
+            	<div class="panel panel-default">
+                	<div class="panel-body">
+                        <div class="checkbox">
+                            <input type="checkbox" class="form-control" name="active" id="active" value="1" <?= ($article['active'] == 1 ? 'checked' : ''); ?>>
+                            <label for="active">Active</label>
+                        </div>
+                        <div class="form-group">
+                        	<label for="date">Date</label>
+                            <input type="date" name="date" id="date" value="<?= $article['date']; ?>" class="form-control">
+                            <div class="help-block">The date the original item was published.</div>
+                        </div>
+                        <div class="form-group">
+                        	<label for="postedby">Posted By</label>
+                            <select name="postedby" id="postedby">
+                            <? while($adminuser = $adminusers->fetch_assoc()) { ?>
+                            	<option value="<?= $adminuser['username']; ?>" <?= ($article['postedby'] == $adminuser['username'] ? 'selected' : ''); ?>><?= $adminuser['name']; ?></option>
+                            <? } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                        	<label for="lang">Language</label>
+                            <input type="text" name="lang" id="lang" class="form-control" value="<?= $article['lang']; ?>" placeholder="en" disabled>
+                        </div>
+                        <p>
+                        	<strong>Visits:</strong><br><?= intval($article['visits']); ?><br>
+                            <strong>Created:</strong><br><?= (!empty($article['created']) ? $article['created'] : date("Y-m-d H:i:s")); ?><br>
+                            <strong>Modified:</strong><br><?= (!empty($article['modified']) ? $article['modified'] : date("Y-m-d H:i:s")); ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </form>
+        <!-- InstanceEndEditable -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/<?= $bootstrap['version']; ?>/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="js/ie10-viewport-bug-workaround.js"></script>
+	<!-- InstanceBeginEditable name="code" -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.1/js/bootstrap-datepicker.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.1/js/locales/bootstrap-datepicker.en-GB.js" charset="UTF-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/3.12.0/dropzone.min.js"></script>
+    <script src="ckeditor/ckeditor.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+		$(document).ready(function(e) {
+			$("#imagedrop").dropzone({
+				url: "upload.php",
+				uploadMultiple: true,
+				dictDefaultMessage: 'Drop image here to upload',
+				complete: function (file) {
+					var filename = '<?= $baseurl; ?>/uploads/images/' + file.name;
+					filename = filename.replace(' ','-');
+					console.log(filename);
+					$("#image").val(filename);
+					$("#image_preview").hide();
+					$("#imagedrop img").attr("src",filename);
+					$(".dz-details img").hide();
+				}
+			});
+			
+			$("#delete").click(function(e) {
+				e.preventDefault();
+				if ( confirm("Delete this item?") ) {
+					window.location = "article_save.php?action=delete&id=<?= $article['id']; ?>";
+				}
+			});
+			
+			$("#date").datepicker({
+				format: 'yyyy-mm-dd'
+			});
+			
+			editor( 'content' );
+      editorLite( 'desc' );
+    });
+	</script>
+    <!-- InstanceEndEditable -->
+</body>
+<!-- InstanceEnd --></html>

@@ -1,0 +1,87 @@
+.CodeMirror {
+	box-shadow: none;
+	width:100%;
+	border: 2px solid #DCE4EC;
+	border-radius: 4px;
+}
+.CodeMirror-focused {
+	border: 2px solid #000000;
+}
+
+.droparea, .dropzone {
+	border: 1px dashed #dcdcdc;
+	padding:10px;
+	text-align:center;
+}
+.dz-drag-hover {
+	background:#dcdcdc;
+}
+.dz-preview {
+	width: 100%;
+	text-align:left;
+}
+.dz-error-mark * {
+	display:none !important;
+}
+.dz-preview * {
+	display: inline-block !important;
+	width: auto !important;
+	margin-right:5px !important;
+}
+.droparea input[type=file], .dropzone input[type=file] {
+	display:none;
+}
+.droparea {
+	display:none;
+	/*
+	border:2px dashed #DCE4EC;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	border-radius:4px;
+	*/
+}
+.droparea.dz-drag-hover {
+	border-color:#000000;
+}
+.droparea img {
+	max-width:300px;
+	height:auto;
+}
+#image_preview {
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	border-radius:4px;
+}
+
+.grabhandle {
+	text-align:center;
+	cursor:grab;
+}
+
+.grabhandle.ui-sortable-helper {
+	cursor: grabbing;
+}
+
+.cal_block {
+	display:block;
+	width:72px;
+	height:72px;
+	text-align:center;
+	border-radius:5px;
+	border:1px solid #dcdcdc;
+}
+.cal_block .day {
+	font-size:36px;
+	height: ((100% / 3) * 2);
+}
+.cal_block .month {
+	height: (100% / 3);
+}
+
+.bootstrap-datetimepicker-widget {
+    font-size: 14px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
